@@ -1,9 +1,11 @@
 unique_ids:
   assets:
+    nyx_avatar.png: '1743109417615442988893120.4884'
     standard-page.html: EJK3B7IY76XJCYYRQBS5JCHZIJCL2N5L
     theme.css: 45T7VSKMAXNKHZK52K6WTMDTN725UHTO
   forms:
     Form1: DLNN67ZSONG4RLJLTBMHD2MMSRP6IMOX
   modules: {}
   scripts: {}
-  server_modules: {}
+  server_modules:
+    ServerModule1: '1743108037305382429312177.9674'

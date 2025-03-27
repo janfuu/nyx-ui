@@ -1,11 +1,15 @@
 allow_embedding: false
-name: Rally App 1
+metadata: {description: Nyx Chat Frontend, logo_img: 'asset:nyx_avatar.png', title: Nyx}
+name: Nyx UI
 native_deps: {head_html: '<link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;600&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" rel="preload" as="font" crossorigin="anonymous">'}
-package_name: Rally_App_1
+package_name: Nyx_UI
 runtime_options:
   client_version: '3'
   server_spec: {base: python310-minimal}
   server_version: python3-sandbox
   version: 2
-services: []
+services:
+- client_config: {}
+  server_config: {}
+  source: /runtime/services/tables.yml
 startup_form: Form1

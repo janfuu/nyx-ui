@@ -1,8 +1,25 @@
 components:
-- components: []
+- components:
+  - components:
+    - layout_properties: {grid_position: 'KRBRPV,OFOJZN'}
+      name: image_1
+      properties: {}
+      type: Image
+    layout_properties: {grid_position: 'VMMRQC,KWWZRM'}
+    name: card_1
+    properties: {role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'VMMRQC,OJPVDT'}
+    name: text_area_1
+    properties: {}
+    type: TextArea
   layout_properties: {slot: default}
   name: column_panel_1
-  properties: {col_widths: '{}'}
+  properties: {col_widths: '{"KWWZRM":30,"OJPVDT":30}'}
+  type: ColumnPanel
+- layout_properties: {slot: left-nav}
+  name: column_panel_2
+  properties: {}
   type: ColumnPanel
 container:
   properties: {html: '@theme:standard-page.html'}
