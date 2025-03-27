@@ -1,27 +1,27 @@
+form: Form1
 components:
-- components:
-  - components:
-    - layout_properties: {grid_position: 'KRBRPV,OFOJZN'}
-      name: image_1
-      properties: {}
-      type: Image
-    layout_properties: {grid_position: 'VMMRQC,KWWZRM'}
-    name: card_1
-    properties: {role: card}
-    type: ColumnPanel
-  - layout_properties: {grid_position: 'VMMRQC,OJPVDT'}
-    name: text_area_1
+  - type: Label
+    name: label_mood
+    properties: {text: "Mood"}
+  - type: Image
+    name: image_1
     properties: {}
-    type: TextArea
-  layout_properties: {slot: default}
-  name: column_panel_1
-  properties: {col_widths: '{"KWWZRM":30,"OJPVDT":30}'}
-  type: ColumnPanel
-- layout_properties: {slot: left-nav}
-  name: column_panel_2
-  properties: {}
-  type: ColumnPanel
-container:
-  properties: {html: '@theme:standard-page.html'}
-  type: HtmlTemplate
-is_package: true
+  - type: Label
+    name: label_location
+    properties: {text: "Location"}
+  - type: TextArea
+    name: text_area_thoughts
+    properties: {placeholder: "Thought Log"}
+  - type: TextBox
+    name: text_box_input
+    properties: {placeholder: "Type a message"}
+  - type: Button
+    name: button_send
+    event_bindings: {click: button_send_click}
+    properties: {text: "Send"}
+  - type: TextArea
+    name: text_area_chat
+    properties: {placeholder: "Chat history"}
+  - type: Timer
+    name: timer_1
+    event_bindings: {tick: timer_1_tick}
