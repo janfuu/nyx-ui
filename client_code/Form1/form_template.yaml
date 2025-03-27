@@ -1,26 +1,51 @@
 components:
 - components:
-  - components:
-    - layout_properties: {grid_position: 'KRBRPV,OFOJZN'}
-      name: image_1
-      properties: {}
-      type: Image
-    layout_properties: {grid_position: 'VMMRQC,KWWZRM'}
-    name: card_1
-    properties: {role: card}
-    type: ColumnPanel
-  - layout_properties: {grid_position: 'VMMRQC,OJPVDT'}
-    name: text_area_1
+  - layout_properties: {grid_position: 'KTBQYX,BWFKNT'}
+    name: label_mood
     properties: {}
+    type: Label
+  - layout_properties: {grid_position: 'VBPUTW,EBGTAC'}
+    name: label_location
+    properties: {}
+    type: Label
+  - layout_properties: {grid_position: 'HTNJYC,NHXZKO'}
+    name: text_area_thoughts
+    properties: {height: 107}
     type: TextArea
-  layout_properties: {slot: default}
-  name: column_panel_1
-  properties: {col_widths: '{"KWWZRM":30,"OJPVDT":30}'}
-  type: ColumnPanel
-- layout_properties: {slot: left-nav}
+  layout_properties: {slot: left-nav}
   name: column_panel_2
   properties: {}
   type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'REETMS,BKHWBH'}
+    name: text_area_chat
+    properties: {auto_expand: false, height: 362}
+    type: TextArea
+  - layout_properties: {grid_position: 'GRAQFF,HXYQSA'}
+    name: text_box_input
+    properties: {}
+    type: TextBox
+  - layout_properties: {full_width_row: false, grid_position: 'GRAQFF,NNHBCB'}
+    name: button_send
+    properties:
+      align: center
+      spacing:
+        padding: [null, null, null, 11]
+      text: Send
+    type: Button
+  - event_bindings: {tick: timer_1_tick}
+    layout_properties: {grid_position: 'JSHHSM,WYFSKE'}
+    name: timer_1
+    properties: {}
+    type: Timer
+  layout_properties: {slot: default}
+  name: column_panel_1
+  properties: {col_widths: '{"HXYQSA":45,"NNHBCB":15,"ZHBCDX":58}'}
+  type: ColumnPanel
+- layout_properties: {slot: logo}
+  name: image_1
+  properties: {display_mode: original_size, source: _/theme/1aaadd73_890a_4928_bc52_f8ecbaffd10e-1aaadd73-890a-4928-bc52-f8ecbaffd10e.jpg}
+  type: Image
 container:
   properties: {html: '@theme:standard-page.html'}
   type: HtmlTemplate
