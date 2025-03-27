@@ -9,6 +9,7 @@ class Form1(Form1Template):
 
   def __init__(self, **properties):
     self.init_components(**properties)
+    self._last_location = None
     self.timer_1.interval = 3
     self.update_all_cards()
 
@@ -17,11 +18,20 @@ class Form1(Form1Template):
 
   def update_all_cards(self):
     try:
+      # Mood + Thoughts always refresh
       self.label_mood.text = anvil.http.request(f'{API_BASE}/mood', json=True)['mood']
-      self.image_1.source = anvil.http.request(f'{API_BASE}/image', json=True)['url']
-      self.label_location.text = anvil.http.request(f'{API_BASE}/location', json=True)['location']
       thoughts = anvil.http.request(f'{API_BASE}/thoughts', json=True)['thoughts']
       self.text_area_thoughts.text = '\n'.join(thoughts)
+  
+      # Location check
+      location_res = anvil.http.request(f'{API_BASE}/location', json=True)
+      current_location = location_res['location']
+      self.label_location.text = current_location
+  
+      if current_location != self._last_location:
+        self._last_location = current_location
+        image_res = anvil.http.request(f'{API_BASE}/location_image', json=True)
+        self.image_location.source = image_res['url']
     except Exception as e:
       self.label_mood.text = f"Error: {e}"
 

@@ -1,38 +1,62 @@
 components:
 - components:
-  - layout_properties: {grid_position: 'KTBQYX,BWFKNT'}
-    name: label_mood
-    properties: {}
-    type: Label
-  - layout_properties: {grid_position: 'VBPUTW,EBGTAC'}
-    name: label_location
-    properties: {}
-    type: Label
   - layout_properties: {grid_position: 'HTNJYC,NHXZKO'}
     name: text_area_thoughts
     properties: {height: 107}
     type: TextArea
+  - layout_properties: {grid_position: 'PYFWPY,YAQWXU'}
+    name: label_mood
+    properties: {}
+    type: Label
   layout_properties: {slot: left-nav}
   name: column_panel_2
   properties: {}
   type: ColumnPanel
 - components:
-  - layout_properties: {grid_position: 'REETMS,BKHWBH'}
-    name: text_area_chat
-    properties: {auto_expand: false, height: 362}
-    type: TextArea
-  - layout_properties: {grid_position: 'GRAQFF,HXYQSA'}
-    name: text_box_input
-    properties: {}
-    type: TextBox
-  - layout_properties: {full_width_row: false, grid_position: 'GRAQFF,NNHBCB'}
-    name: button_send
-    properties:
-      align: center
-      spacing:
-        padding: [null, null, null, 11]
-      text: Send
-    type: Button
+  - components:
+    - components:
+      - layout_properties: {}
+        name: text_area_chat
+        properties: {auto_expand: false, enabled: false, height: 470}
+        type: TextArea
+      - name: text_box_input
+        properties: {}
+        type: TextBox
+      - name: button_send
+        properties:
+          align: center
+          spacing:
+            padding: [null, null, null, 11]
+          text: Send
+        type: Button
+      layout_properties: {expand: false, width: 800}
+      name: linear_panel_1
+      properties:
+        background: ''
+        foreground: ''
+        spacing:
+          margin: [null, 20, null, null]
+      type: LinearPanel
+    - components:
+      - layout_properties: {}
+        name: image_location
+        properties: {display_mode: original_size, height: '600', source: _/theme/40a16b52_beb2_440a_9fc8_db689aeeefbf-40a16b52-beb2-440a-9fc8-db689aeeefbf.png}
+        type: Image
+      - layout_properties: {}
+        name: label_location
+        properties: {text: 'cyberpunk apartment interior at night, gritty, moody lighting, rain outside the window, digital screens glowing, synthwave color palette, photo-realistic, 35mm lens'}
+        type: Label
+      layout_properties: {expand: false, width: 520}
+      name: linear_panel_2
+      properties:
+        background: ''
+        spacing:
+          padding: [0, 6, null, 6]
+      type: LinearPanel
+    layout_properties: {full_width_row: true, grid_position: 'FKSMXM,WVVBDG'}
+    name: flow_panel_1
+    properties: {background: '', gap: large}
+    type: FlowPanel
   - event_bindings: {tick: timer_1_tick}
     layout_properties: {grid_position: 'JSHHSM,WYFSKE'}
     name: timer_1
@@ -40,7 +64,7 @@ components:
     type: Timer
   layout_properties: {slot: default}
   name: column_panel_1
-  properties: {col_widths: '{"HXYQSA":45,"NNHBCB":15,"ZHBCDX":58}'}
+  properties: {col_widths: '{"WVVBDG":35}'}
   type: ColumnPanel
 - layout_properties: {slot: logo}
   name: image_1
