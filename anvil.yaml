@@ -1,4 +1,34 @@
 allow_embedding: false
+db_schema:
+  memories:
+    client: none
+    columns:
+    - admin_ui: {width: 200}
+      name: memory_type
+      type: string
+    - admin_ui: {width: 200}
+      name: key
+      type: string
+    - admin_ui: {width: 200}
+      name: value
+      type: string
+    - admin_ui: {width: 200}
+      name: created_at
+      type: datetime
+    - admin_ui: {width: 200}
+      name: updated_at
+      type: datetime
+    - admin_ui: {width: 200}
+      name: importance
+      type: number
+    - admin_ui: {width: 200}
+      name: source
+      type: string
+    - admin_ui: {width: 200}
+      name: is_expired
+      type: bool
+    server: full
+    title: memories
 metadata: {description: Nyx Chat Frontend, logo_img: 'asset:nyx_avatar.png', title: Nyx}
 name: Nyx UI
 native_deps: {head_html: '<link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;600&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" rel="preload" as="font" crossorigin="anonymous">'}
