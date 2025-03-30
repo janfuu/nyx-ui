@@ -11,6 +11,17 @@ class Form1(Form1Template):
     self.init_components(**properties)
     self._last_location = None
     self.timer_1.interval = 30
+    self.check_table_btn = Button(text="Check/Create Table", icon="fa:table")
+    self.check_table_btn.set_event_handler('click', self.check_create_table)
+
+    self.init_memory_btn = Button(text="Initialize Memories", icon="fa:database")
+    self.init_memory_btn.set_event_handler('click', self.initialize_memories)
+
+    self.debug_memory_btn = Button(text="Debug Memories", icon="fa:bug")
+    self.debug_memory_btn.set_event_handler('click', self.debug_memories)
+
+    self.force_memory_btn = Button(text="Force Memory Inclusion", icon="fa:bolt")
+    self.force_memory_btn.set_event_handler('click', self.force_memories)
   #  self.update_all_cards()
 
   def timer_1_tick(self, **event_args):
@@ -52,3 +63,27 @@ class Form1(Form1Template):
     """This method is called when the user presses Enter in this text box"""
     pass
 
+  def check_create_table(self, **event_args):
+    """Check if memories table exists and create it if not"""
+    result = anvil.server.call('ensure_memories_table_exists')
+    alert(f"Table status: {result['status']}")
+      
+  def initialize_memories(self, **event_args):
+    """Initialize test memories"""
+    result = anvil.server.call('initialize_memory_system')
+    alert(f"Memory system: {result['status']}")
+    
+  def debug_memories(self, **event_args):
+    """Print all stored memories"""
+    from . import memory_testing
+    result = anvil.server.call('print_all_memories')
+    alert(f"Found {result['count']} memories. Check server logs for details.")
+    
+  def force_memories(self, **event_args):
+    """Force memories to be included in next prompt"""
+    from . import memory_testing
+    result = anvil.server.call('force_memory_inclusion')
+    if result['status'] == 'success':
+      alert(f"Added {result['memories_included']} memories to system prompt")
+    else:
+      alert(f"Error: {result['message']}")
