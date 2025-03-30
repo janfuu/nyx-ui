@@ -64,9 +64,7 @@ class Form1(Form1Template):
     pass
 
   def check_create_table(self, **event_args):
-    """Check if memories table exists and create it if not"""
-    result = anvil.server.call('ensure_memories_table_exists')
-    alert(f"Table status: {result['status']}")
+ 
       
   def initialize_memories(self, **event_args):
     """Initialize test memories"""
@@ -87,3 +85,21 @@ class Form1(Form1Template):
       alert(f"Added {result['memories_included']} memories to system prompt")
     else:
       alert(f"Error: {result['message']}")
+
+  def check_table_btn_click(self, **event_args):
+   """Check if memories table exists and create it if not"""
+    result = anvil.server.call('ensure_memories_table_exists')
+    alert(f"Table status: {result['status']}")
+
+  def init_memory_btn_click(self, **event_args):
+    """This method is called when the button is clicked"""
+    pass
+
+  def debug_memory_btn_click(self, **event_args):
+    """This method is called when the button is clicked"""
+    pass
+
+  def force_memory_btn_click(self, **event_args):
+    """This method is called when the button is clicked"""
+    pass
+

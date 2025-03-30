@@ -8,6 +8,26 @@ components:
     name: label_mood
     properties: {}
     type: Label
+  - event_bindings: {click: check_table_btn_click}
+    layout_properties: {grid_position: 'SQYVGO,RJWFJG'}
+    name: check_table_btn
+    properties: {text: Check Table}
+    type: Button
+  - event_bindings: {click: init_memory_btn_click}
+    layout_properties: {grid_position: 'FCKLJC,BJTRHQ'}
+    name: init_memory_btn
+    properties: {text: Init Memory}
+    type: Button
+  - event_bindings: {click: debug_memory_btn_click}
+    layout_properties: {grid_position: 'VRHJQI,KLXRLJ'}
+    name: debug_memory_btn
+    properties: {text: Debug Memories}
+    type: Button
+  - event_bindings: {click: force_memory_btn_click}
+    layout_properties: {grid_position: 'HEDLMP,OPVIHV'}
+    name: force_memory_btn
+    properties: {text: Force Memory}
+    type: Button
   layout_properties: {slot: left-nav}
   name: column_panel_2
   properties: {}
