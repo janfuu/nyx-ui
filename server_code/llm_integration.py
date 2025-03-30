@@ -11,7 +11,7 @@ OPENAI_API_BASE = "http://localhost:5000/v1"
 OPENAI_MODEL = "your-model-name"  # e.g. "gpt-4", "gemma-7b", etc.
 MAX_MESSAGES = 20  # Adjustable window size, depending on token budget
 TIMEOUT = 60  # Increase timeout for slower models
-USE_STREAMING = True  # Set to True to use streaming mode
+USE_STREAMING = False  # Set to True to use streaming mode
 
 DEFAULT_SYSTEM_MESSAGE = {
     "role": "system",
@@ -91,10 +91,6 @@ def chat_with_model(user_message):
         "stop": ["<end_of_turn>"]
     }
     
-    # Add streaming if enabled
-    if USE_STREAMING:
-        payload["stream"] = True
-
     try:
         start_time = time.time()
         print(f"Starting LLM request at {start_time}")
@@ -104,9 +100,9 @@ def chat_with_model(user_message):
             reply = ""
             response = httpx.post(
                 f"{OPENAI_API_BASE}/completions",
-                json=payload,
+                json={key: value for key, value in payload.items() if key != "stream"},  # Exclude "stream"
                 timeout=TIMEOUT,
-                stream=True
+                # stream=True
             )
             response.raise_for_status()
             

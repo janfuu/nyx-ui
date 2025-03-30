@@ -61,11 +61,11 @@ components:
       type: LinearPanel
     - components:
       - layout_properties: {}
-        name: image_location
+        name: image_display
         properties: {display_mode: original_size, height: '600', source: _/theme/40a16b52_beb2_440a_9fc8_db689aeeefbf-40a16b52-beb2-440a-9fc8-db689aeeefbf.png}
         type: Image
       - layout_properties: {}
-        name: label_location
+        name: label_image_desc
         properties: {text: 'cyberpunk apartment interior at night, gritty, moody lighting, rain outside the window, digital screens glowing, synthwave color palette, photo-realistic, 35mm lens'}
         type: Label
       layout_properties: {expand: false, width: 520}

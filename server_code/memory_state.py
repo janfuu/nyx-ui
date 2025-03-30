@@ -4,6 +4,7 @@ import datetime
 import anvil.server
 
 # For local testing, we'll default to using Anvil tables if available
+global USE_LOCAL_STORAGE
 USE_LOCAL_STORAGE = False
 
 try:
@@ -32,6 +33,7 @@ MEMORY_TYPES = {
 @anvil.server.callable
 def save_memory(memory_type, key, value, importance=5, source="conversation"):
     """Save a piece of information to persistent memory"""
+    global USE_LOCAL_STORAGE  # Ensure global variable is accessible
     try:
         # Print what we're saving for debugging
         print(f"SAVING MEMORY: {memory_type} - {key}: {value}")
@@ -99,7 +101,6 @@ def save_memory(memory_type, key, value, importance=5, source="conversation"):
                 except:
                     print("'memories' table does not exist - needs to be created")
                     # Switch to local storage as fallback
-                    global USE_LOCAL_STORAGE
                     USE_LOCAL_STORAGE = True
                     # Try again with local storage
                     return save_memory(memory_type, key, value, importance, source)
@@ -109,7 +110,6 @@ def save_memory(memory_type, key, value, importance=5, source="conversation"):
         print(f"Error saving memory: {e}")
         # Fall back to local storage if an unexpected error occurs
         if not USE_LOCAL_STORAGE:
-            global USE_LOCAL_STORAGE
             USE_LOCAL_STORAGE = True
             print("Switching to local storage due to error")
             return save_memory(memory_type, key, value, importance, source)
