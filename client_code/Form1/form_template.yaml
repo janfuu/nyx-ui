@@ -19,10 +19,12 @@ components:
         name: text_area_chat
         properties: {auto_expand: false, enabled: false, height: 470}
         type: TextArea
-      - name: text_box_input
+      - event_bindings: {pressed_enter: text_box_input_pressed_enter}
+        name: text_box_input
         properties: {}
         type: TextBox
-      - name: button_send
+      - event_bindings: {click: button_send_click}
+        name: button_send
         properties:
           align: center
           spacing:

@@ -37,6 +37,7 @@ class Form1(Form1Template):
   #     self.label_mood.text = f"Error: {e}"
 
   def button_send_click(self, **event_args):
+      print("Button clicked")  # Confirm this actually fires
       user_msg = self.text_box_input.text
       self.text_area_chat.text += f"You: {user_msg}\n"
       self.text_box_input.text = ''
@@ -46,4 +47,8 @@ class Form1(Form1Template):
           self.text_area_chat.text += f"Nyx: {res['reply']}\n"
       except Exception as e:
           self.text_area_chat.text += f"Error: {e}\n"
+
+  def text_box_input_pressed_enter(self, **event_args):
+    """This method is called when the user presses Enter in this text box"""
+    pass
 
