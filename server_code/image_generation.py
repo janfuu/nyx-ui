@@ -1,175 +1,74 @@
 # image_generation.py
 import anvil.server
-import httpx
-import json
-import base64
+import asyncio
 import os
-from io import BytesIO
+from runware import Runware, IImageInference, IPromptEnhance
 
-# Configure the Runware SDK settings
-# You'll need to adjust these settings based on your Runware setup
-RUNWARE_API_URL = "https://api.runware.ai/v1"  # Change to your Runware API endpoint
-RUNWARE_API_KEY = os.environ.get("RUNWARE_API_KEY", "your_default_api_key")
+RUNWARE_API_KEY = os.environ.get("RUNWARE_API_KEY")
 
-class ImageGenerationError(Exception):
-    """Custom exception for image generation errors"""
-    pass
+def run_async(coro):
+    return asyncio.new_event_loop().run_until_complete(coro)
 
-@anvil.server.callable
-def generate_image(prompt, width=512, height=512, model="sd3"):
-    """
-    Generate an image using the Runware SDK
-    
-    Args:
-        prompt (str): The image description to generate
-        width (int): Image width
-        height (int): Image height
-        model (str): Model to use for generation
-        
-    Returns:
-        dict: Contains the image URL or data
-    """
+@anvil.server.background_task
+def generate_image_task(prompt, width=512, height=512, model="civitai:101055@128078"):
+    anvil.server.task_state['status'] = 'starting'
+
     try:
-        print(f"Generating image for prompt: {prompt}")
-        
-        # Prepare the payload for Runware SDK
-        payload = {
-            "prompt": prompt,
-            "width": width,
-            "height": height,
-            "model": model,
-            "num_inference_steps": 30,
-            "guidance_scale": 7.5
-        }
-        
-        # Set up headers with API key if required
-        headers = {}
-        if RUNWARE_API_KEY:
-            headers["Authorization"] = f"Bearer {RUNWARE_API_KEY}"
-        
-        print("Sending request to Runware SDK...")
-        
-        # Make the API request
-        response = httpx.post(
-            RUNWARE_API_URL,
-            json=payload,
-            headers=headers,
-            timeout=120  # Image generation can take time
+        runware = Runware(api_key=RUNWARE_API_KEY)
+        run_async(runware.connect())
+
+        # Prompt enhancement
+        enhancer = IPromptEnhance(prompt=prompt, promptVersions=1, promptMaxLength=77)
+        anvil.server.task_state['status'] = 'enhancing'
+
+        enhanced_list = run_async(runware.promptEnhance(promptEnhancer=enhancer))
+        enhanced_prompt = enhanced_list[0].text
+
+        # Generate image
+        request = IImageInference(
+            positivePrompt=enhanced_prompt,
+            model=model,
+            numberResults=1,
+            negativePrompt="blurry, distorted",
+            height=height,
+            width=width,
         )
-        
-        # Check for errors
-        response.raise_for_status()
-        
-        # Parse the response
-        result = response.json()
-        
-        if "error" in result:
-            raise ImageGenerationError(f"Runware SDK error: {result['error']}")
-        
-        print("Image generation successful")
-        
-        # Return the result
-        # The structure depends on the Runware SDK response format
-        # This is a placeholder - adjust based on actual response format
+        anvil.server.task_state['status'] = 'generating'
+
+        result = run_async(runware.imageInference(requestImage=request))
+        if not result or not result[0].imageURL:
+            raise Exception("No image URL returned")
+
+        anvil.server.task_state['status'] = 'complete'
         return {
             "status": "success",
-            "image_url": result.get("image_url"),
-            "image_data": result.get("image_data"),
-            "prompt": prompt
-        }
-        
-    except httpx.HTTPStatusError as e:
-        print(f"HTTP error: {e.response.status_code} - {e.response.text}")
-        return {
-            "status": "error",
-            "error": f"HTTP error: {e.response.status_code}",
-            "details": e.response.text
-        }
-    except httpx.RequestError as e:
-        print(f"Request error: {str(e)}")
-        return {
-            "status": "error",
-            "error": f"Request error: {str(e)}"
-        }
-    except ImageGenerationError as e:
-        print(f"Generation error: {str(e)}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-    except Exception as e:
-        print(f"Unexpected error: {str(e)}")
-        return {
-            "status": "error",
-            "error": f"Unexpected error: {str(e)}"
+            "image_url": result[0].imageURL,
+            "enhanced_prompt": enhanced_prompt
         }
 
-@anvil.server.callable
-def handle_image_tag(image_description):
-    """Process an image tag and generate the image"""
-    # Generate the image
-    result = generate_image(image_description)
-    
-    if result["status"] == "success":
-        # Image generation successful
-        if result.get("image_url"):
-            # If Runware returns a URL
-            return {
-                "status": "success",
-                "image_url": result["image_url"],
-                "prompt": image_description
-            }
-        elif result.get("image_data"):
-            # If Runware returns base64 image data
-            # In Anvil, you might need to handle this differently
-            return {
-                "status": "success",
-                "image_data": result["image_data"],
-                "prompt": image_description
-            }
-    else:
-        # Image generation failed
-        return {
-            "status": "error",
-            "error": result["error"],
-            "prompt": image_description
-        }
-
-# Alternative more flexible implementation that can be adjusted based on Runware SDK
-@anvil.server.callable
-def generate_image_with_sdk(prompt, **params):
-    """
-    Flexible image generation function that can be adjusted for different Runware SDK implementations
-    
-    Args:
-        prompt (str): The image description
-        **params: Additional parameters to pass to the SDK
-        
-    Returns:
-        dict: Contains the image result
-    """
-    # This is a placeholder - you'll need to implement this based on your Runware SDK
-    try:
-        # This is where you'd implement the actual Runware SDK integration
-        # SDK might look something like:
-        # from runware import ImageGenerator
-        # generator = ImageGenerator(api_key=RUNWARE_API_KEY)
-        # result = generator.generate(prompt, **params)
-        
-        # Placeholder for now
-        print(f"Would generate image with Runware SDK: {prompt}")
-        print(f"Parameters: {params}")
-        
-        # Simulated response
-        return {
-            "status": "success",
-            "image_url": "https://placeholder.com/image.jpg",  # This would be the actual image URL
-            "prompt": prompt
-        }
-        
     except Exception as e:
-        print(f"Error with Runware SDK: {str(e)}")
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+        anvil.server.task_state['status'] = 'error'
+        anvil.server.task_state['error'] = str(e)
+        raise
+
+@anvil.server.callable
+def launch_image_task(prompt):
+    task = anvil.server.launch_background_task('generate_image_task', prompt)
+    return task.get_id()  # return the ID for tracking later
+
+@anvil.server.callable
+def check_image_task(task_id):
+    task = anvil.server.get_background_task(task_id)
+    state = task.get_state()
+    result = {
+        "status": state.get("status"),
+        "error": state.get("error"),
+        "is_running": task.is_running(),
+        "is_completed": task.is_completed(),
+        "termination": task.get_termination_status()
+    }
+
+    if task.is_completed():
+        result["result"] = task.get_return_value()
+
+    return result
