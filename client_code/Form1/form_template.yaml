@@ -79,10 +79,10 @@ components:
     name: flow_panel_1
     properties: {background: '', gap: large}
     type: FlowPanel
-  - event_bindings: {tick: timer_1_tick}
+  - event_bindings: {tick: timer_image_check_tick}
     layout_properties: {grid_position: 'JSHHSM,WYFSKE'}
-    name: timer_1
-    properties: {}
+    name: timer_image_check
+    properties: {interval: 2}
     type: Timer
   layout_properties: {slot: default}
   name: column_panel_1
