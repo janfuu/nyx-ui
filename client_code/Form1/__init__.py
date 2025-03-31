@@ -3,8 +3,6 @@ from anvil import *
 import anvil.server
 import anvil.http
 
-API_BASE = 'http://localhost:8000/api'
-
 class Form1(Form1Template):
 
   def __init__(self, **properties):
@@ -32,7 +30,7 @@ class Form1(Form1Template):
       self.text_area_chat.text += f"Nyx: Thinking...\n"
       
       # Use the direct processing function
-      result = anvil.server.call('chat_with_model_direct', user_msg)
+      result = anvil.server.call('chat_pipeline', user_msg)
       
       if result["status"] == "success":
         # Update chat area - remove "Thinking..." and add the response
@@ -78,38 +76,35 @@ class Form1(Form1Template):
       self.label_mood.text = "Error"
 
   def handle_image_generation(self, image_description):
-    """Handle image generation process"""
-    # Update image description
-    self.label_image_desc.text = image_description
-    self.current_image_description = image_description
-    
-    # Show loading indicator for image
-    self.image_1.source = "https://via.placeholder.com/300x300.png?text=Generating+Image..."
-    
-    # Generate image in background
-    anvil.server.call_s('background_generate_image', image_description, 
-                       self.generate_image_callback)
-  
-  def generate_image_callback(self, result):
-    """Callback for image generation"""
-    if result["status"] == "success":
-      # Image generated successfully
-      if result.get("image_url"):
-        # Set image from URL
-        self.image_1.source = result["image_url"]
-      elif result.get("image_data"):
-        # Set image from data (if Anvil supports this)
-        try:
-          import base64
-          from io import BytesIO
-          img_data = base64.b64decode(result["image_data"])
-          self.image_1.source = img_data  # This might need adjustment based on Anvil's API
-        except:
-          self.image_1.source = "https://via.placeholder.com/300x300.png?text=Image+Data+Error"
-    else:
-      # Image generation failed
-      self.image_1.source = "https://via.placeholder.com/300x300.png?text=Image+Generation+Failed"
-      print(f"Image generation error: {result.get('error')}")
+      """Start image generation and display result in image_generated"""
+      self.current_image_description = image_description
+
+      # Set a placeholder while generating
+      self.image_generated.source = "https://via.placeholder.com/300x300.png?text=Generating..."
+
+      try:
+          result = anvil.server.call('background_generate_image', image_description)
+          self.display_generated_image(result)
+      except Exception as e:
+          print(f"Image generation error: {e}")
+          self.image_generated.source = "https://via.placeholder.com/300x300.png?text=Error"
+
+  def display_generated_image(self, result):
+      if result["status"] == "success":
+          if result.get("image_url"):
+              self.image_generated.source = result["image_url"]
+          elif result.get("image_data"):
+              # Base64 fallback
+              try:
+                  import base64
+                  from anvil import BlobMedia
+                  decoded = base64.b64decode(result["image_data"])
+                  self.image_generated.source = BlobMedia("image/png", decoded)
+              except:
+                  self.image_generated.source = "https://via.placeholder.com/300x300.png?text=Invalid+Image"
+      else:
+          self.image_generated.source = "https://via.placeholder.com/300x300.png?text=Generation+Failed"
+
 
   def button_generate_image_click(self, **event_args):
     """Generate image from current description"""

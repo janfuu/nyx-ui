@@ -6,6 +6,7 @@ import datetime
 from . import memory_state
 from . import non_threaded_processing
 from . import image_generation
+from . import pipeline
 import threading
 import time
 
@@ -46,7 +47,7 @@ def initialize_memory_system():
 
 
 @anvil.server.callable
-def chat_with_model_direct(user_message):
+def chat_pipeline(user_message):
     """Process a chat message directly with tag parsing"""
     return non_threaded_processing.chat_with_model_direct(user_message)
 
