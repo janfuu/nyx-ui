@@ -36,9 +36,9 @@ components:
   - components:
     - components:
       - layout_properties: {}
-        name: text_area_chat
-        properties: {auto_expand: false, enabled: false, height: 470}
-        type: TextArea
+        name: rich_text_1
+        properties: {enable_slots: false, format: restricted_html}
+        type: RichText
       - event_bindings: {pressed_enter: text_box_input_pressed_enter}
         name: text_box_input
         properties: {}
@@ -61,7 +61,7 @@ components:
       type: LinearPanel
     - components:
       - layout_properties: {}
-        name: image_display
+        name: image_generated
         properties: {display_mode: original_size, height: '600', source: _/theme/40a16b52_beb2_440a_9fc8_db689aeeefbf-40a16b52-beb2-440a-9fc8-db689aeeefbf.png}
         type: Image
       - layout_properties: {}
@@ -89,7 +89,7 @@ components:
   properties: {col_widths: '{"WVVBDG":35}'}
   type: ColumnPanel
 - layout_properties: {slot: logo}
-  name: image_1
+  name: image_portrait
   properties: {display_mode: original_size, source: _/theme/1aaadd73_890a_4928_bc52_f8ecbaffd10e-1aaadd73-890a-4928-bc52-f8ecbaffd10e.jpg}
   type: Image
 container:
