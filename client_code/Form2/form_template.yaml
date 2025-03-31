@@ -1,12 +1,28 @@
 components:
-- layout_properties: {slot: default}
+- components:
+  - components:
+    - data_bindings:
+      - {code: 'self.item['''']', property: text, writeback: false}
+      layout_properties: {grid_position: 'OUBBVN,SQFBDR'}
+      name: text_area_sys_prompt
+      properties: {height: 270}
+      type: TextArea
+    layout_properties: {grid_position: 'YMBNTB,FCYQSP'}
+    name: column_panel_2
+    properties: {}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'ZRDGEW,FKBVID'}
+    name: btn_save
+    properties: {text: Save}
+    type: Button
+  layout_properties: {slot: default}
   name: content_panel
   properties: {}
   type: ColumnPanel
 - components:
-  - event_bindings: {click: button_1_click}
+  - event_bindings: {click: btn_return_click}
     layout_properties: {grid_position: 'WZEDZK,VCWTIL'}
-    name: button_1
+    name: btn_return
     properties: {text: Return}
     type: Button
   layout_properties: {slot: left-nav}
