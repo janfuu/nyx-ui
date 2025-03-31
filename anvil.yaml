@@ -29,6 +29,17 @@ db_schema:
       type: bool
     server: full
     title: memories
+  settings:
+    client: none
+    columns:
+    - admin_ui: {order: 0, width: 200}
+      name: system_prompt
+      type: string
+    - admin_ui: {order: 1, width: 200}
+      name: appearance_prompt
+      type: string
+    server: full
+    title: settings
 metadata: {description: Nyx Chat Frontend, logo_img: 'asset:nyx_avatar.png', title: Nyx}
 name: Nyx UI
 native_deps: {head_html: '<link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;600&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" rel="preload" as="font" crossorigin="anonymous">'}

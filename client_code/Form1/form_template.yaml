@@ -36,9 +36,9 @@ components:
   - components:
     - components:
       - layout_properties: {}
-        name: rich_text_1
-        properties: {enable_slots: false, format: restricted_html}
-        type: RichText
+        name: text_area_chat
+        properties: {auto_expand: false, enabled: false, height: 470}
+        type: TextArea
       - event_bindings: {pressed_enter: text_box_input_pressed_enter}
         name: text_box_input
         properties: {}
