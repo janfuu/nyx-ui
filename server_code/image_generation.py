@@ -1,4 +1,5 @@
 # image_generation.py
+
 import anvil.server
 import asyncio
 import os
@@ -6,62 +7,89 @@ from runware import Runware, IImageInference, IPromptEnhance
 
 RUNWARE_API_KEY = os.environ.get("RUNWARE_API_KEY")
 
-def run_async(coro):
-    return asyncio.new_event_loop().run_until_complete(coro)
+NYX_DESCRIPTION = (
+    "a futuristic woman with shimmering skin and chrome facial accents, "
+    "dark hair, "
+)
+
+
+def references_nyx(prompt: str) -> bool:
+    terms = ["me", "my", "myself", "i "]
+    prompt_lower = prompt.lower()
+    return any(term in prompt_lower for term in terms)
+
 
 @anvil.server.background_task
-def generate_image_task(prompt, width=512, height=512, model="civitai:101055@128078"):
+def generate_image_task(prompt):
+    """Background task to enhance a prompt and generate an image using Runware."""
     anvil.server.task_state['status'] = 'starting'
 
-    try:
-        runware = Runware(api_key=RUNWARE_API_KEY)
-        run_async(runware.connect())
+    def set_state(stage, msg=None):
+        anvil.server.task_state['status'] = stage
+        if msg:
+            anvil.server.task_state['log'] = msg
 
-        # Prompt enhancement
-        enhancer = IPromptEnhance(prompt=prompt, promptVersions=1, promptMaxLength=77)
-        anvil.server.task_state['status'] = 'enhancing'
+    async def wrapped():
+        try:
+            set_state('connecting')
+            runware = Runware(api_key=RUNWARE_API_KEY)
+            await runware.connect()
 
-        enhanced_list = run_async(runware.promptEnhance(promptEnhancer=enhancer))
-        enhanced_prompt = enhanced_list[0].text
+            set_state('enhancing')
+            # Add reference to her appearance
+            if references_nyx(prompt):
+                print("[Nyx] Self-reference detected — injecting visual description.")
+                prompt = f"{NYX_DESCRIPTION}, {prompt}"
 
-        # Generate image
-        request = IImageInference(
-            positivePrompt=enhanced_prompt,
-            model=model,
-            numberResults=1,
-            negativePrompt="blurry, distorted",
-            height=height,
-            width=width,
-        )
-        anvil.server.task_state['status'] = 'generating'
+            enhancer = IPromptEnhance(prompt=prompt, promptVersions=1, promptMaxLength=77)
+            enhanced = await runware.promptEnhance(promptEnhancer=enhancer)
+            enhanced_prompt = enhanced[0].text
 
-        result = run_async(runware.imageInference(requestImage=request))
-        if not result or not result[0].imageURL:
-            raise Exception("No image URL returned")
+            set_state('generating', enhanced_prompt)
+            request = IImageInference(
+                positivePrompt=enhanced_prompt,
+                model="civitai:101055@128078",
+                numberResults=1,
+                negativePrompt="blurry, distorted",
+                height=512,
+                width=512,
+            )
 
-        anvil.server.task_state['status'] = 'complete'
-        return {
-            "status": "success",
-            "image_url": result[0].imageURL,
-            "enhanced_prompt": enhanced_prompt
-        }
+            result = await runware.imageInference(requestImage=request)
+            if result and result[0].imageURL:
+                set_state('complete')
+                return {
+                    "status": "success",
+                    "image_url": result[0].imageURL,
+                    "enhanced_prompt": enhanced_prompt
+                }
 
-    except Exception as e:
-        anvil.server.task_state['status'] = 'error'
-        anvil.server.task_state['error'] = str(e)
-        raise
+            set_state('error', "No image returned")
+            return {"status": "error", "error": "No image returned"}
+
+        except Exception as e:
+            set_state('error', str(e))
+            return {"status": "error", "error": str(e)}
+
+    return asyncio.run(wrapped())
+
 
 @anvil.server.callable
 def launch_image_task(prompt):
+    """Launch a background task to generate an image."""
     task = anvil.server.launch_background_task('generate_image_task', prompt)
-    return task.get_id()  # return the ID for tracking later
+    return task.get_id()
+
 
 @anvil.server.callable
 def check_image_task(task_id):
+    """Check the status and result of a previously launched image task."""
     task = anvil.server.get_background_task(task_id)
     state = task.get_state()
+
     result = {
         "status": state.get("status"),
+        "log": state.get("log"),
         "error": state.get("error"),
         "is_running": task.is_running(),
         "is_completed": task.is_completed(),

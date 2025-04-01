@@ -8,12 +8,34 @@ class Form1(Form1Template):
   def __init__(self, **properties):
     self.init_components(**properties)
     self._last_location = None
-    self.timer_1.interval = 30
     self.current_image_description = None
 
-  def timer_1_tick(self, **event_args):
-    #  self.update_all_cards()
-    pass
+  def timer_image_check_tick(self, **event_args):
+    """Poll Runware background image task"""
+    try:
+      if not self.image_task_id:
+        self.timer_image_check.enabled = False
+        return
+
+      with anvil.server.no_loading_indicator:
+        result = anvil.server.call('check_image_task', self.image_task_id)
+
+      if result.get("status") == "error":
+        print("Image generation failed:", result.get("error"))
+        self.timer_image_check.enabled = False
+        return
+
+      if result.get("is_completed"):
+        self.timer_image_check.enabled = False
+        final = result.get("result")
+        if final and final.get("image_url"):
+          self.image_generated.source = final["image_url"]
+        else:
+          print("Image task completed but no image returned")
+
+    except Exception as e:
+      print(f"Polling error: {e}")
+      self.timer_image_check.enabled = False
 
 
   def button_send_click(self, **event_args):
@@ -77,15 +99,16 @@ class Form1(Form1Template):
       self.label_mood.text = "Error"
 
   def handle_image_generation(self, image_description):
-    """Start background image generation using Runware"""
     self.current_image_description = image_description
-
     try:
+      with anvil.server.no_loading_indicator:
         task_id = anvil.server.call('launch_image_task', image_description)
-        self.image_task_id = task_id
-        self.timer_image_check.enabled = True  # begin polling every few seconds
+
+      self.image_task_id = task_id
+      self.timer_image_check.enabled = True
     except Exception as e:
-        print(f"Image task launch failed: {e}")
+      print(f"Image task launch failed: {e}")
+
 
   def timer_image_check_tick(self, **event_args):
     """Poll Runware background image task"""
